@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>小姐姐生日快樂</title>
+<style>
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+    background: linear-gradient(180deg, #FFF8ED 0%, #FDEFD9 50%, #FAE6C4 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    overflow-x: hidden;
+  }
+
+  .card {
+    position: relative;
+    max-width: 480px;
+    width: 100%;
+    background: #FFFDF8;
+    border-radius: 28px;
+    padding: 48px 32px 40px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(196, 150, 90, 0.18), 0 4px 12px rgba(196, 150, 90, 0.1);
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.9s ease-out, transform 0.9s ease-out;
+    overflow: hidden;
+  }
+
+  .card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .card::before {
+    content: "";
+    position: absolute;
+    top: -60px;
+    right: -60px;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, #FBE3B8 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .card::after {
+    content: "";
+    position: absolute;
+    bottom: -50px;
+    left: -50px;
+    width: 140px;
+    height: 140px;
+    background: radial-gradient(circle, #F7D9C4 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .emoji {
+    font-size: 48px;
+    margin-bottom: 12px;
+    display: inline-block;
+    animation: sway 3s ease-in-out infinite;
+  }
+
+  @keyframes sway {
+    0%, 100% { transform: rotate(-6deg); }
+    50% { transform: rotate(6deg); }
+  }
+
+  h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #9C6B3E;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: #B08968;
+    margin-bottom: 28px;
+    font-weight: 500;
+  }
+
+  .message {
+    font-size: 15px;
+    line-height: 1.9;
+    color: #8A6D4E;
+    margin-bottom: 32px;
+    padding: 0 8px;
+  }
+
+  .cta-btn {
+    position: relative;
+    z-index: 2;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 16px 40px;
+    font-size: 16px;
+    font-weight: 700;
+    color: #FFFDF8;
+    background: linear-gradient(135deg, #E8A855 0%, #D98B4A 100%);
+    border-radius: 999px;
+    box-shadow: 0 8px 20px rgba(217, 139, 74, 0.35);
+    transition: transform 0.15s ease, box-shadow 0.25s ease;
+    letter-spacing: 1px;
+  }
+
+  .cta-btn:hover {
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 12px 26px rgba(217, 139, 74, 0.45);
+  }
+
+  .cta-btn.popped {
+    animation: popShake 0.4s ease;
+  }
+
+  @keyframes popShake {
+    0% { transform: scale(1) rotate(0deg); }
+    20% { transform: scale(0.85) rotate(-8deg); }
+    40% { transform: scale(1.15) rotate(6deg); }
+    60% { transform: scale(0.95) rotate(-3deg); }
+    100% { transform: scale(1) rotate(0deg); }
+  }
+
+  .flash {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #FFF7E8;
+    opacity: 0;
+    pointer-events: none;
+    z-index: 998;
+  }
+
+  .flash.active {
+    animation: flashPop 0.35s ease-out;
+  }
+
+  @keyframes flashPop {
+    0% { opacity: 0.55; }
+    100% { opacity: 0; }
+  }
+
+  .birthday-text {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    font-size: 40px;
+    font-weight: 700;
+    color: #D98B4A;
+    letter-spacing: 3px;
+    text-shadow: 0 4px 16px rgba(217, 139, 74, 0.35);
+    pointer-events: none;
+    z-index: 1000;
+    white-space: nowrap;
+    opacity: 0;
+  }
+
+  .birthday-text.pop {
+    animation: bounceIn 1.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  }
+
+  @keyframes bounceIn {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+    50% { transform: translate(-50%, -50%) scale(1.15); opacity: 1; }
+    65% { transform: translate(-50%, -50%) scale(0.95); }
+    80% { transform: translate(-50%, -50%) scale(1.05); }
+    100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+  }
+
+  .birthday-text.fadeout {
+    animation: fadeOutText 0.5s ease forwards;
+  }
+
+  @keyframes fadeOutText {
+    to { opacity: 0; transform: translate(-50%, -50%) scale(0.9); }
+  }
+
+  @media (max-width: 380px) {
+    .birthday-text { font-size: 26px; }
+  }
+
+  canvas#confetti-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+  @media (max-width: 380px) {
+    .card { padding: 40px 22px 32px; }
+    h1 { font-size: 24px; }
+    .emoji { font-size: 40px; }
+    .cta-btn { padding: 14px 32px; font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<canvas id="confetti-canvas"></canvas>
+<div class="flash" id="flash"></div>
+
+<div class="card" id="card">
+  <div class="emoji">🎂</div>
+  <h1>小姐姐</h1>
+  <p class="subtitle">今天是屬於妳的日子 ✨</p>
+  <p class="message">
+    願妳的笑容像今天一樣燦爛，<br>
+    願妳的每一個心願都能實現，<br>
+    新的一歲，繼續閃閃發光。
+  </p>
+  <button class="cta-btn" id="surpriseBtn">🎉 拉一下</button>
+</div>
+<div class="birthday-text" id="birthdayText">HAPPY BIRTHDAY</div>
+
+<script>
+  // 卡片淡入
+  window.addEventListener('load', function () {
+    setTimeout(function () {
+      document.getElementById('card').classList.add('visible');
+    }, 100);
+  });
+
+  // 彩球特效
+  (function () {
+    var canvas = document.getElementById('confetti-canvas');
+    var ctx = canvas.getContext('2d');
+    var particles = [];
+    var colors = ['#E8A855', '#D98B4A', '#F2C87A', '#E8927A', '#C97B63', '#F4D9A8', '#DDA15E'];
+    var width, height;
+
+    function resize() {
+      width = canvas.width = window.innerWidth;
+      height = canvas.height = window.innerHeight;
+    }
+    resize();
+    window.addEventListener('resize', resize);
+
+    function spawnBurst() {
+      var count = window.innerWidth < 480 ? 100 : 170;
+      var origins = [
+        { x: width * 0.08, y: height * 0.92, dir: -Math.PI * 0.32 },
+        { x: width * 0.92, y: height * 0.92, dir: -Math.PI * 0.68 }
+      ];
+      origins.forEach(function (o) {
+        for (var i = 0; i < count / 2; i++) {
+          var spread = (Math.random() - 0.5) * Math.PI * 0.5;
+          var angle = o.dir + spread;
+          var speed = 10 + Math.random() * 13;
+          particles.push({
+            x: o.x,
+            y: o.y,
+            vx: Math.cos(angle) * speed,
+            vy: Math.sin(angle) * speed,
+            size: 6 + Math.random() * 6,
+            color: colors[Math.floor(Math.random() * colors.length)],
+            rotation: Math.random() * 360,
+            rotSpeed: (Math.random() - 0.5) * 18,
+            shape: Math.random() > 0.5 ? 'circle' : 'rect',
+            life: 0,
+            maxLife: 160 + Math.random() * 90
+          });
+        }
+      });
+    }
+
+    function animate() {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(function (p) {
+        p.vy += 0.15;
+        p.vx *= 0.99;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.rotSpeed;
+        p.life++;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, 1 - p.life / p.maxLife);
+        if (p.shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+        }
+        ctx.restore();
+      });
+      particles = particles.filter(function (p) {
+        return p.life < p.maxLife && p.y < height + 40;
+      });
+      requestAnimationFrame(animate);
+    }
+
+    // 背景許願燈光點
+    var fireworkParticles = [];
+
+    function spawnFirework() {
+      var fx = width * (0.1 + Math.random() * 0.8);
+      var fy = height + 20;
+      var color = colors[Math.floor(Math.random() * colors.length)];
+      fireworkParticles.push({
+        x: fx,
+        y: fy,
+        vx: (Math.random() - 0.5) * 0.3,
+        vy: -(0.4 + Math.random() * 0.5),
+        size: 5 + Math.random() * 4,
+        color: color,
+        glowPhase: Math.random() * Math.PI * 2,
+        swayAmp: 8 + Math.random() * 12,
+        swaySpeed: 0.008 + Math.random() * 0.012,
+        startX: fx,
+        life: 0,
+        maxLife: 500 + Math.random() * 300
+      });
+    }
+
+    function animateFireworks() {
+      fireworkParticles.forEach(function (p) {
+        p.life++;
+        p.y += p.vy;
+        p.x = p.startX + Math.sin(p.life * p.swaySpeed) * p.swayAmp;
+        var fadeIn = Math.min(1, p.life / 40);
+        var fadeOut = Math.max(0, 1 - Math.max(0, p.life - p.maxLife + 60) / 60);
+        var flicker = 0.85 + Math.sin(p.life * 0.1 + p.glowPhase) * 0.15;
+        var alpha = fadeIn * fadeOut * flicker;
+        ctx.save();
+        ctx.globalAlpha = alpha * 0.35;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+      fireworkParticles = fireworkParticles.filter(function (p) {
+        return p.life < p.maxLife && p.y > -30;
+      });
+    }
+
+    var origAnimate = animate;
+    animate = function () {
+      ctx.clearRect(0, 0, width, height);
+      particles.forEach(function (p) {
+        p.vy += 0.25;
+        p.vx *= 0.985;
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.rotSpeed;
+        p.life++;
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate((p.rotation * Math.PI) / 180);
+        ctx.fillStyle = p.color;
+        ctx.globalAlpha = Math.max(0, 1 - p.life / p.maxLife);
+        if (p.shape === 'circle') {
+          ctx.beginPath();
+          ctx.arc(0, 0, p.size / 2, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.fillRect(-p.size / 2, -p.size / 4, p.size, p.size / 2);
+        }
+        ctx.restore();
+      });
+      particles = particles.filter(function (p) {
+        return p.life < p.maxLife && p.y < height + 40;
+      });
+      animateFireworks();
+      requestAnimationFrame(animate);
+    };
+
+    var surpriseBtn = document.getElementById('surpriseBtn');
+    var flashEl = document.getElementById('flash');
+    var birthdayText = document.getElementById('birthdayText');
+    var textTimer = null;
+    surpriseBtn.addEventListener('click', function () {
+      spawnBurst();
+      surpriseBtn.classList.remove('popped');
+      void surpriseBtn.offsetWidth;
+      surpriseBtn.classList.add('popped');
+      flashEl.classList.remove('active');
+      void flashEl.offsetWidth;
+      flashEl.classList.add('active');
+
+      birthdayText.classList.remove('pop', 'fadeout');
+      void birthdayText.offsetWidth;
+      birthdayText.classList.add('pop');
+      if (textTimer) clearTimeout(textTimer);
+      textTimer = setTimeout(function () {
+        birthdayText.classList.add('fadeout');
+      }, 1800);
+    });
+    animate();
+
+    // 背景持續生成許願燈
+    function backgroundFireworksLoop() {
+      spawnFirework();
+      var nextDelay = 600 + Math.random() * 900;
+      setTimeout(backgroundFireworksLoop, nextDelay);
+    }
+    setTimeout(backgroundFireworksLoop, 500);
+  })();
+</script>
+
+</body>
+</html>
